@@ -75,7 +75,7 @@ const Auth = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <Input
-                  placeholder="password"
+                  placeholder="confirm password"
                   type="password"
                   className="rounded-full p-6"
                   value={confirmPassword}
