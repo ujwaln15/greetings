@@ -2,15 +2,50 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { SIGNUP_ROUTE } from "@/utils/constants";
+import { apiClient } from "@/lib/api-client";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  // const [emailExist, setEmailExist] = useState(false);
+
+  const validateSignUp = () => {
+    if (!email.length) {
+      toast.error("email is required.");
+      return false;
+    }
+    if (!password.length) {
+      toast.error("password is required.");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("passwords should match.");
+      return false;
+    }
+    if (!email.match("[0-9A-Za-z]+@[0-9A-Za-z]+.com")) {
+      toast.error("not a valid email address.");
+      return false;
+    }
+    if (!password.match("^(?=.*[A-Z])(?=.*[@#$%^&*])(?=.*\\d).{10,}$")) {
+      toast.error(
+        "password must be atleast 10 characters long and contain atleast 1 uppercase letter, special character and a numeral each."
+      );
+      return false;
+    }
+    return true;
+  };
 
   const handleLogin = async () => {};
 
-  const handleCreate = async () => {};
+  const handleCreate = async () => {
+    if (validateSignUp()) {
+      const response = await apiClient.post(SIGNUP_ROUTE, { email, password });
+      console.log({ response });
+    }
+  };
 
   return (
     <div className="h-[100vh] w-[100vw] flex items-center justify-center">
@@ -21,7 +56,7 @@ const Auth = () => {
               <h1 className="text-5xl font-bold md:text-6xl">greetings.</h1>
             </div>
             <p className="font-medium text-center">
-              the minimalist's chat app.
+              the minimalistic chat app.
             </p>
           </div>
           <div className="flex items-center justify-center w-full">
@@ -81,7 +116,7 @@ const Auth = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                <Button className="rounded-full p-6" onClick={handleLogin}>
+                <Button className="rounded-full p-6" onClick={handleCreate}>
                   create account
                 </Button>
               </TabsContent>
