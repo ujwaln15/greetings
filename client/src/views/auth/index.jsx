@@ -3,47 +3,101 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { SIGNUP_ROUTE } from "@/utils/constants";
+import { SIGNUP_ROUTE, LOGIN_ROUTE } from "@/utils/constants";
 import { apiClient } from "@/lib/api-client";
+import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  // const [emailExist, setEmailExist] = useState(false);
 
-  const validateSignUp = () => {
+  const validateLogin = () => {
     if (!email.length) {
       toast.error("email is required.");
-      return false;
-    }
-    if (!password.length) {
-      toast.error("password is required.");
-      return false;
-    }
-    if (password !== confirmPassword) {
-      toast.error("passwords should match.");
       return false;
     }
     if (!email.match("[0-9A-Za-z]+@[0-9A-Za-z]+.com")) {
       toast.error("not a valid email address.");
       return false;
     }
-    if (!password.match("^(?=.*[A-Z])(?=.*[@#$%^&*])(?=.*\\d).{10,}$")) {
-      toast.error(
-        "password must be atleast 10 characters long and contain atleast 1 uppercase letter, special character and a numeral each."
-      );
+    if (!password.length) {
+      toast.error("password is required.");
       return false;
     }
     return true;
   };
 
-  const handleLogin = async () => {};
+  const validateSignUp = () => {
+    if (!email.length) {
+      toast.error("email is required.");
+      return false;
+    }
+    if (!email.match("[0-9A-Za-z]+@[0-9A-Za-z]+.com")) {
+      toast.error("not a valid email address.");
+      return false;
+    }
+    if (!password.length) {
+      toast.error("password is required.");
+      return false;
+    }
+    if (!password.match("^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\\d).{10,}$")) {
+      toast.error(
+        "password must be atleast 10 characters long and contain atleast 1 uppercase letter, special character and a numeral each."
+      );
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("passwords should match.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleLogin = async () => {
+    if (validateLogin()) {
+      try {
+        const response = await apiClient.post(
+          LOGIN_ROUTE,
+          { email, password },
+          { withCredentials: true }
+        );
+        if (response.data.user.id) {
+          if (response.data.user.profileComplete) navigate("/chat");
+          else navigate("/user");
+        }
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+        if (err.response.status === 404) {
+          toast.error("account does not exist. please signup.");
+          setPassword("");
+        }
+      }
+    }
+  };
 
   const handleCreate = async () => {
     if (validateSignUp()) {
-      const response = await apiClient.post(SIGNUP_ROUTE, { email, password });
-      console.log({ response });
+      try {
+        const response = await apiClient.post(
+          SIGNUP_ROUTE,
+          { email, password },
+          { withCredentials: true }
+        );
+        if (response.status === 201) {
+          navigate("/user");
+        }
+        console.log({ response });
+      } catch (err) {
+        console.log(err);
+        if (err.response.status === 409) {
+          toast.error("email exists, login instead.");
+          setPassword("");
+          setConfirmPassword("");
+        }
+      }
     }
   };
 
