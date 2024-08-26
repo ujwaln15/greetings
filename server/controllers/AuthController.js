@@ -78,3 +78,24 @@ export const login = async (request, response, next) => {
     return response.status(500).send("Internal Server Error");
   }
 };
+
+export const getUserInfo = async (request, response, next) => {
+  try {
+    const user = await User.findById(request.userId);
+    if (!user) {
+      return response.status(404).send("User with given id not found");
+    }
+    return response.status(200).json({
+      id: user.id,
+      email: user.email,
+      profileComplete: user.profileComplete,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      theme: user.theme,
+      dp: user.dp,
+    });
+  } catch (err) {
+    console.log({ err });
+    return response.status(500).send("Internal Server Error");
+  }
+};
