@@ -1,15 +1,19 @@
 import { useAppStore } from "@/store";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
-import { Avatar } from "@/components/ui/avatar";
-import { AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { getTheme, themes } from "@/lib/utils";
 import { FaTrash, FaPlus } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
-import { UPDATE_PROFILE_ROUTE } from "@/utils/constants";
+import {
+  ADD_DP_ROUTE,
+  HOST,
+  REMOVE_DP_ROUTE,
+  UPDATE_PROFILE_ROUTE,
+} from "@/utils/constants";
 import { toast } from "sonner";
 
 const User = () => {
@@ -21,11 +25,16 @@ const User = () => {
   const [selectedTheme, setSelectedTheme] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
+  const fileInputRef = useRef(null);
+
   useEffect(() => {
     if (userInfo.profileComplete) {
       setFirstName(userInfo.firstName);
       setLastName(userInfo.lastName);
       setSelectedTheme(userInfo.theme);
+    }
+    if (userInfo.dp) {
+      setDp(`${HOST}/${userInfo.dp}`);
     }
   }, [userInfo]);
 
@@ -57,6 +66,40 @@ const User = () => {
       } catch (err) {
         console.log({ err });
       }
+    }
+  };
+
+  const handleFileInputClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("dp", file);
+      const response = await apiClient.post(ADD_DP_ROUTE, formData, {
+        withCredentials: true,
+      });
+      if (response.status === 200 && response.data.dp) {
+        setUserInfo({ ...userInfo, dp: response.data.dp });
+        toast.success("dp updated.");
+      }
+    }
+  };
+
+  const handleDeleteImage = async () => {
+    try {
+      const response = await apiClient.delete(REMOVE_DP_ROUTE, {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setUserInfo({ ...userInfo, dp: null });
+        toast.success("dp removed.");
+        setDp(null);
+      }
+    } catch (err) {
+      console.log({ err });
     }
   };
 
@@ -100,7 +143,10 @@ const User = () => {
               )}
             </Avatar>
             {isHovered && (
-              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-gray-700/70 ring-fuchsia-900">
+              <div
+                className="absolute inset-0 flex items-center justify-center rounded-full bg-gray-700/70 ring-fuchsia-900"
+                onClick={dp ? handleDeleteImage : handleFileInputClick}
+              >
                 {dp ? (
                   <FaTrash className="text-white text-3xl cursor-pointer" />
                 ) : (
@@ -108,6 +154,14 @@ const User = () => {
                 )}
               </div>
             )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              onChange={handleImageChange}
+              name="dp"
+              accept=".png, .jpg, .jpeg, .svg, .webp"
+            />
           </div>
           <div className="flex min-w-32 md:min-w-64 flex-col gap-5 text-white items-center justify-center">
             <div className="w-full">
@@ -155,7 +209,7 @@ const User = () => {
         </div>
         <div className="w-full">
           <Button
-            className="h-16 w-full bg-blue-700 hover: bg-blue-900 transition-all duration-300"
+            className="h-16 w-full bg-blue-700 hover:bg-blue-900 transition-all duration-300"
             onClick={saveChanges}
           >
             Save Changes

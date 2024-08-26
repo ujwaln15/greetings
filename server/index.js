@@ -23,6 +23,8 @@ app.use(
   })
 );
 
+app.use("/uploads/dps", express.static("uploads/dps"));
+
 // enabling cookies
 app.use(cookieParser());
 // request body payload in json format

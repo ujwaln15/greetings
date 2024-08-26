@@ -1,6 +1,7 @@
 import { compare } from "bcrypt";
 import User from "../models/UserModel.js";
 import jwt from "jsonwebtoken";
+import { renameSync, unlinkSync } from "fs";
 
 const tokenMaxAge = 2 * 24 * 60 * 60 * 1000;
 
@@ -128,6 +129,54 @@ export const updateProfile = async (request, response, next) => {
       theme: user.theme,
       dp: user.dp,
     });
+  } catch (err) {
+    console.log({ err });
+    return response.status(500).send("Internal Server Error");
+  }
+};
+
+export const addDp = async (request, response, next) => {
+  try {
+    if (!request.file) {
+      return response.status(400).send("File is required.");
+    }
+
+    const date = Date.now();
+    let fileName = "uploads/dps/" + date + request.file.originalname;
+    renameSync(request.file.path, fileName);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      request.userId,
+      { dp: fileName },
+      { new: true, runValidators: true }
+    );
+
+    return response.status(200).json({
+      dp: updatedUser.dp,
+    });
+  } catch (err) {
+    console.log({ err });
+    return response.status(500).send("Internal Server Error");
+  }
+};
+
+export const removeDp = async (request, response, next) => {
+  try {
+    const { userId } = request;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return response.status(404).send("User not found.");
+    }
+
+    if (user.dp) {
+      unlinkSync(user.dp);
+    }
+
+    user.dp = null;
+    await user.save();
+
+    return response.status(200).send("dp removed successfully");
   } catch (err) {
     console.log({ err });
     return response.status(500).send("Internal Server Error");
