@@ -10,7 +10,7 @@ import { getTheme } from "@/lib/utils";
 import { useAppStore } from "@/store";
 import { HOST, LOGOUT_ROUTE } from "@/utils/constants";
 import { FiEdit2 } from "react-icons/fi";
-import { IoLogOut, IoLogOutOutline } from "react-icons/io5";
+import { IoLogOutOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 
 function ProfileInfo() {
