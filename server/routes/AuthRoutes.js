@@ -3,6 +3,7 @@ import {
   addDp,
   getUserInfo,
   login,
+  logOut,
   removeDp,
   signUp,
   updateProfile,
@@ -19,5 +20,6 @@ authRoutes.get("/user-info", verifyToken, getUserInfo);
 authRoutes.post("/update-profile", verifyToken, updateProfile);
 authRoutes.post("/add-dp", verifyToken, upload.single("dp"), addDp);
 authRoutes.delete("/remove-dp", verifyToken, removeDp);
+authRoutes.post("/logout", logOut);
 
 export default authRoutes;

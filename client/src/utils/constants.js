@@ -6,3 +6,4 @@ export const GET_USER_INFO = `${AUTH_ROUTES}/user-info`;
 export const UPDATE_PROFILE_ROUTE = `${AUTH_ROUTES}/update-profile`;
 export const ADD_DP_ROUTE = `${AUTH_ROUTES}/add-dp`;
 export const REMOVE_DP_ROUTE = `${AUTH_ROUTES}/remove-dp`;
+export const LOGOUT_ROUTE = `${AUTH_ROUTES}/logout`;

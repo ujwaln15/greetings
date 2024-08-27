@@ -1,3 +1,5 @@
+import ProfileInfo from "./components/profile-info";
+
 /* eslint-disable react/prop-types */
 function ContactsContainer() {
   return (
@@ -17,6 +19,7 @@ function ContactsContainer() {
           <Title text="gatherings." />
         </div>
       </div>
+      <ProfileInfo />
     </div>
   );
 }

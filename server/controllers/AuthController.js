@@ -182,3 +182,17 @@ export const removeDp = async (request, response, next) => {
     return response.status(500).send("Internal Server Error");
   }
 };
+
+export const logOut = async (request, response, next) => {
+  try {
+    response.cookie("jwt", "", {
+      tokenMaxAge: 1,
+      secure: true,
+      sameSite: "None",
+    });
+    return response.status(200).send("Logout successful");
+  } catch (err) {
+    console.log({ err });
+    return response.status(500).send("Internal Server Error");
+  }
+};

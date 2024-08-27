@@ -58,7 +58,7 @@ function MessageBar() {
         </div>
       </div>
       <button
-        className="bg-gray-500 rounded-xl flex items-center justify-center p-3 hover:bg-white hover:text-black focus:border-none focus:outline-none focus:text-black focus:bg-white transition-all duration-300"
+        className="bg-gray-700 rounded-xl flex items-center justify-center p-3 hover:bg-white hover:text-black focus:border-none focus:outline-none focus:text-black focus:bg-white transition-all duration-300"
         onClick={handleSendMessage}
       >
         <IoSend className="text-2xl" />
