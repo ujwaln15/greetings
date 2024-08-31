@@ -87,14 +87,14 @@ function NewDuo() {
             />
           </div>
           <ScrollArea className="h-[150px]">
-            <div className="flex flex-col gap-10">
+            <div className="flex flex-col gap-2">
               {searchedContacts.map((contact) => (
                 <div
                   key={contact._id}
-                  className="flex gap-3 items-center cursor-pointer"
+                  className="flex gap-3 items-center cursor-pointer p-2 rounded-lg hover:bg-gray-700"
                   onClick={() => selectNewContact(contact)}
                 >
-                  <div className="w-12 h-12 relative">
+                  <div className="h-12 w-12 relative">
                     <Avatar className="h-12 w-12 rounded-full overflow-hidden">
                       {contact.dp ? (
                         <AvatarImage

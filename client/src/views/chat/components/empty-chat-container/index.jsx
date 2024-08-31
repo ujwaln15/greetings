@@ -3,7 +3,7 @@ import Lottie from "react-lottie";
 
 function EmptyChatContainer() {
   return (
-    <div className="flex-1 md:bg-[#000000] border-r-2 border-white md:flex flex-col items-center justify-center hidden duration-1000 transition-all">
+    <div className="flex-1 md:bg-[#000000] md:flex flex-col items-center justify-center hidden duration-1000 transition-all">
       <Lottie
         isClickToPauseDisabled={true}
         height={200}
