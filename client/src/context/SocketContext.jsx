@@ -9,6 +9,7 @@ export const useSocket = () => {
   return useContext(SocketContext);
 };
 
+// eslint-disable-next-line react/prop-types
 export const SocketProvider = ({ children }) => {
   const socket = useRef();
   const { userInfo } = useAppStore();
@@ -21,6 +22,21 @@ export const SocketProvider = ({ children }) => {
       socket.current.on("connect", () => {
         console.log("Connected to socket server.");
       });
+
+      const handleReceiveMessage = (message) => {
+        const { selectedChatData, selectedChatType, addMessage } =
+          useAppStore.getState();
+        if (
+          (selectedChatType !== undefined &&
+            selectedChatData._id === message.sender._id) ||
+          selectedChatData._id === message.recipient._id
+        ) {
+          addMessage(message);
+        }
+      };
+
+      socket.current.on("receiveMessage", handleReceiveMessage);
+
       return () => {
         socket.current.disconnect();
       };
