@@ -32,6 +32,7 @@ export const SocketProvider = ({ children }) => {
           selectedChatData._id === message.recipient._id
         ) {
           addMessage(message);
+          console.log(message);
         }
       };
 

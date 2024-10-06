@@ -1,3 +1,5 @@
+import { useSocket } from "@/context/SocketContext";
+import { useAppStore } from "@/store";
 import EmojiPicker from "emoji-picker-react";
 import { useEffect, useRef, useState } from "react";
 import { GrAttachment } from "react-icons/gr";
@@ -6,6 +8,8 @@ import { RiEmojiStickerLine } from "react-icons/ri";
 
 function MessageBar() {
   const emojiRef = useRef();
+  const socket = useSocket();
+  const { selectedChatType, selectedChatData, userInfo } = useAppStore();
   const [message, setMessage] = useState("");
   const [emojiPickerOn, setEmojiPickerOn] = useState(false);
 
@@ -25,7 +29,17 @@ function MessageBar() {
     setMessage((msg) => msg + emoji.emoji);
   };
 
-  const handleSendMessage = async () => {};
+  const handleSendMessage = async () => {
+    if (selectedChatType === "duo") {
+      socket.emit("sendMessage", {
+        sender: userInfo.id,
+        content: message,
+        recipient: selectedChatData._id,
+        messageType: "text",
+        fileUrl: undefined,
+      });
+    }
+  };
 
   return (
     <div className="h-[10vw] flex justify-center items-center px-8 mb-5 gap-6">
