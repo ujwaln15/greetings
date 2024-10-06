@@ -12,7 +12,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { cn } from "@/lib/utils";
+import { cn, getThemeBackground } from "@/lib/utils";
+import { useAppStore } from "@/store";
 
 const CommandEmpty = forwardRef(({ className, ...props }, forwardedRef) => {
   const render = useCommandState((state) => state.filtered.count === 0);
@@ -64,6 +65,7 @@ const MultipleSelector = React.forwardRef(
     const [open, setOpen] = React.useState(false);
     const mouseOn = React.useRef(false);
     const [isLoading, setIsLoading] = React.useState(false);
+    const { userInfo } = useAppStore();
 
     const [selected, setSelected] = React.useState(value || []);
     const [options, setOptions] = React.useState(
@@ -272,7 +274,8 @@ const MultipleSelector = React.forwardRef(
                 <Badge
                   key={option.value}
                   className={cn(
-                    "data-[disabled]:bg-muted-foreground data-[disabled]:text-muted data-[disabled]:hover:bg-muted-foreground bg-purple-500 p-2",
+                    "data-[disabled]:bg-muted-foreground data-[disabled]:text-muted data-[disabled]:hover:bg-muted-foreground p-2 " +
+                      getThemeBackground(userInfo.theme),
                     "data-[fixed]:bg-muted-foreground data-[fixed]:text-muted data-[fixed]:hover:bg-muted-foreground",
                     badgeClassName
                   )}
@@ -296,7 +299,7 @@ const MultipleSelector = React.forwardRef(
                     }}
                     onClick={() => handleUnselect(option)}
                   >
-                    <X className="h-4 w-4 text-white hover:text-purple-500" />
+                    <X className="h-4 w-4 text-white hover:text-opacity-15" />
                   </button>
                 </Badge>
               );

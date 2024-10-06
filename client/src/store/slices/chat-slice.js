@@ -7,6 +7,8 @@ export const createChatSlice = (set, get) => ({
   isDownloading: false,
   fileUploadProgress: 0,
   fileDownloadProgress: 0,
+  gatherings: [],
+  setGatherings: (gatherings) => set({ gatherings }),
   setIsUploading: (isUploading) => set({ isUploading }),
   setIsDownloading: (isDownloading) => set({ isDownloading }),
   setFileUploadProgress: (fileUploadProgress) => set({ fileUploadProgress }),
@@ -17,6 +19,10 @@ export const createChatSlice = (set, get) => ({
   setSelectedChatMessages: (selectedChatMessages) =>
     set({ selectedChatMessages }),
   setDuoContacts: (duoContacts) => set({ duoContacts }),
+  addGathering: (gathering) => {
+    const gatherings = get().gatherings;
+    set({ gatherings: [gathering, ...gatherings] });
+  },
   closeChat: () =>
     set({
       selectedChatData: undefined,

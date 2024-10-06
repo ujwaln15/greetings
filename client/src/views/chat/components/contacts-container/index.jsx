@@ -2,14 +2,18 @@ import { useEffect } from "react";
 import NewDuo from "./components/new-duo";
 import ProfileInfo from "./components/profile-info";
 import { apiClient } from "@/lib/api-client";
-import { GET_DUO_CONTACTS_ROUTE } from "@/utils/constants";
+import {
+  GET_DUO_CONTACTS_ROUTE,
+  GET_USER_GATHERINGS_ROUTE,
+} from "@/utils/constants";
 import { useAppStore } from "@/store";
 import ContactList from "@/components/contact-list";
 import CreateGathering from "./components/create-gathering";
 
 /* eslint-disable react/prop-types */
 function ContactsContainer() {
-  const { setDuoContacts, duoContacts } = useAppStore();
+  const { setDuoContacts, duoContacts, gatherings, setGatherings } =
+    useAppStore();
 
   useEffect(() => {
     const getContacts = async () => {
@@ -21,8 +25,18 @@ function ContactsContainer() {
       }
     };
 
+    const getGatherings = async () => {
+      const response = await apiClient.get(GET_USER_GATHERINGS_ROUTE, {
+        withCredentials: true,
+      });
+      if (response.data.gatherings) {
+        setGatherings(response.data.gatherings);
+      }
+    };
+
     getContacts();
-  });
+    getGatherings();
+  }, []);
 
   return (
     <div className="relative md:w-[35vw] lg:w-[30vw] xl:w-[20vw] bg-[#000000] border-r-2 border-[#ffffff] w-full">
@@ -44,6 +58,9 @@ function ContactsContainer() {
         <div className="flex items-center justify-between pr-10">
           <Title text="gatherings." />
           <CreateGathering />
+        </div>
+        <div className="max-h-[38vh] overflow-y-auto scrollbar-hidden">
+          <ContactList contacts={gatherings} isGathering={true} />
         </div>
       </div>
       <ProfileInfo />

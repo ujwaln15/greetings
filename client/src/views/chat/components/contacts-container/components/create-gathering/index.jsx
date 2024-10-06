@@ -16,20 +16,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";
 import {
+  CREATE_GATHERING_ROUTE,
   GET_ALL_CONTACTS_ROUTE,
-  SEARCH_CONTACTS_ROUTE,
 } from "@/utils/constants";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar } from "@/components/ui/avatar";
-import { AvatarImage } from "@radix-ui/react-avatar";
 import { useAppStore } from "@/store";
 import { Button } from "@/components/ui/button";
 import MultipleSelector from "@/components/ui/multipleselect";
 
 function CreateGathering() {
-  const { setSelectedChatType, setSelectedChatData, userInfo } = useAppStore();
+  const { setSelectedChatType, setSelectedChatData, addGathering } =
+    useAppStore();
   const [newGatheringModel, setNewGatheringModel] = useState(false);
-  const [searchedContacts, setSearchedContacts] = useState([]);
   const [allContacts, setAllContacts] = useState([]);
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [gatheringName, setGatheringName] = useState("");
@@ -44,7 +41,30 @@ function CreateGathering() {
     getData();
   }, [newGatheringModel]);
 
-  const createGathering = async () => {};
+  const createGathering = async () => {
+    try {
+      if (gatheringName.length > 0 && selectedContacts.length > 0) {
+        const response = await apiClient.post(
+          CREATE_GATHERING_ROUTE,
+          {
+            name: gatheringName,
+            members: selectedContacts.map((contact) => contact.value),
+          },
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.status === 201) {
+          setGatheringName("");
+          setSelectedContacts([]);
+          setNewGatheringModel(false);
+          addGathering(response.data.gathering);
+        }
+      }
+    } catch (err) {
+      console.log({ err });
+    }
+  };
 
   return (
     <>
