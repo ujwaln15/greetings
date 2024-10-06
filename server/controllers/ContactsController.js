@@ -21,7 +21,27 @@ export const searchContacts = async (request, response, next) => {
         { $or: [{ firstName: regex }, { lastName: regex }, { email: regex }] },
       ],
     });
-    return response.status(200).send({ contacts });
+    return response.status(200).json({ contacts });
+  } catch (err) {
+    console.log({ err });
+    return response.status(500).send("Internal Server Error");
+  }
+};
+
+export const getAllContacts = async (request, response, next) => {
+  try {
+    const users = await User.find(
+      { _id: { $ne: request.userId } },
+      "firstName lastName email _id"
+    );
+
+    const contacts = users.map((user) => ({
+      label: user.firstName
+        ? `${user.firstName} ${user.lastName}`
+        : `${user.email}`,
+      value: user._id,
+    }));
+    return response.status(200).json({ contacts });
   } catch (err) {
     console.log({ err });
     return response.status(500).send("Internal Server Error");
