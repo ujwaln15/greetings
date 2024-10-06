@@ -1,5 +1,7 @@
 import { useSocket } from "@/context/SocketContext";
+import { apiClient } from "@/lib/api-client";
 import { useAppStore } from "@/store";
+import { UPLOAD_FILE_ROUTE } from "@/utils/constants";
 import EmojiPicker from "emoji-picker-react";
 import { useEffect, useRef, useState } from "react";
 import { GrAttachment } from "react-icons/gr";
@@ -8,6 +10,7 @@ import { RiEmojiStickerLine } from "react-icons/ri";
 
 function MessageBar() {
   const emojiRef = useRef();
+  const fileInputRef = useRef();
   const socket = useSocket();
   const { selectedChatType, selectedChatData, userInfo } = useAppStore();
   const [message, setMessage] = useState("");
@@ -41,6 +44,38 @@ function MessageBar() {
     }
   };
 
+  const handleAttachmentClick = async () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleAttachmentChange = async () => {
+    try {
+      const file = event.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await apiClient.post(UPLOAD_FILE_ROUTE, formData, {
+          withCredentials: true,
+        });
+        if (response.status === 200 && response.data) {
+          if (selectedChatType === "duo") {
+            socket.emit("sendMessage", {
+              sender: userInfo.id,
+              content: undefined,
+              recipient: selectedChatData._id,
+              messageType: "file",
+              fileUrl: response.data.filePath,
+            });
+          }
+        }
+      }
+    } catch (err) {
+      console.log({ err });
+    }
+  };
+
   return (
     <div className="h-[10vw] flex justify-center items-center px-8 mb-5 gap-6">
       <div className="flex-1 flex rounded-xl text-black bg-white items-center gap-5 pr-5 ">
@@ -51,9 +86,18 @@ function MessageBar() {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
-        <button className="text-neutral-500 focus:border-none focus:outline-none focus:text-black transition-all duration-300">
+        <button
+          className="text-neutral-500 focus:border-none focus:outline-none focus:text-black transition-all duration-300"
+          onClick={handleAttachmentClick}
+        >
           <GrAttachment className="text-2xl" />
         </button>
+        <input
+          type="file"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={handleAttachmentChange}
+        />
         <div className="relative">
           <button
             className="text-neutral-500 focus:border-none focus:outline-none focus:text-black transition-all duration-300"

@@ -27,6 +27,7 @@ app.use(
 );
 
 app.use("/uploads/dps", express.static("uploads/dps"));
+app.use("/uploads/files", express.static("uploads/files"));
 
 // enabling cookies
 app.use(cookieParser());
