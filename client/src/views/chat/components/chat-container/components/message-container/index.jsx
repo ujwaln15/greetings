@@ -16,6 +16,8 @@ function MessageContainer() {
     userInfo,
     selectedChatMessages,
     setSelectedChatMessages,
+    setIsDownloading,
+    setFileDownloadProgress,
   } = useAppStore();
 
   const [showImage, setShowImage] = useState(false);
@@ -75,8 +77,15 @@ function MessageContainer() {
   };
 
   const downloadFile = async (url) => {
+    setIsDownloading(true);
+    setFileDownloadProgress(0);
     const response = await apiClient.get(`${HOST}/${url}`, {
       responseType: "blob",
+      onDownloadProgress: (progressEvent) => {
+        const { loaded, total } = progressEvent;
+        const percentComplete = Math.round((loaded * 100) / total);
+        setFileDownloadProgress(percentComplete);
+      },
     });
     const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
@@ -86,6 +95,8 @@ function MessageContainer() {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(urlBlob);
+    setIsDownloading(false);
+    setFileDownloadProgress(0);
   };
 
   const renderDuoMessages = (message) => {
@@ -154,7 +165,7 @@ function MessageContainer() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto scrollbar-hidden p-4 px-8 md:w-[65vw] lg:w-[70vw] xl:w-[80w] w-full">
+    <div className="flex-1 overflow-y-auto scrollbar-hidden p-4 px-8 w-full">
       {renderMessages()}
       <div ref={scrollRef} />
       {showImage && (
