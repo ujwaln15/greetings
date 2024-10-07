@@ -1,7 +1,11 @@
 import { apiClient } from "@/lib/api-client";
 import { getTheme } from "@/lib/utils";
 import { useAppStore } from "@/store";
-import { GET_ALL_MESSAGES_ROUTE, HOST } from "@/utils/constants";
+import {
+  GET_ALL_MESSAGES_ROUTE,
+  GET_GATHERING_MESSAGES,
+  HOST,
+} from "@/utils/constants";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { MdFilePresent } from "react-icons/md";
@@ -39,9 +43,25 @@ function MessageContainer() {
         console.log({ err });
       }
     };
+
+    const getGatheringMessages = async () => {
+      try {
+        const response = await apiClient.get(
+          `${GET_GATHERING_MESSAGES}/${selectedChatData._id}`,
+          { withCredentials: true }
+        );
+        if (response.data.messages) {
+          setSelectedChatMessages(response.data.messages);
+        }
+      } catch (err) {
+        console.log({ err });
+      }
+    };
     if (selectedChatData._id) {
       if (selectedChatType === "duo") {
         getMessages();
+      } else if (selectedChatType === "gathering") {
+        getGatheringMessages();
       }
     }
   }, [selectedChatData, selectedChatType, setSelectedChatMessages]);

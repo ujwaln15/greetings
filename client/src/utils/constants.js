@@ -20,3 +20,4 @@ export const UPLOAD_FILE_ROUTE = `${MESSAGES_ROUTE}/upload-file`;
 export const GATHERING_ROUTE = "/api/gathering";
 export const CREATE_GATHERING_ROUTE = `${GATHERING_ROUTE}/create-gathering`;
 export const GET_USER_GATHERINGS_ROUTE = `${GATHERING_ROUTE}/get-user-gatherings`;
+export const GET_GATHERING_MESSAGES = `${GATHERING_ROUTE}/get-gathering-messages`;

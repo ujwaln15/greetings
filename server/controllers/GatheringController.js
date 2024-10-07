@@ -45,3 +45,24 @@ export const getUserGatherings = async (request, response, next) => {
     return response.status(500).send("Internal Server Error");
   }
 };
+
+export const getGatheringMessages = async (request, response, next) => {
+  try {
+    const { gatheringId } = request.params;
+    const gathering = await Gathering.findById(gatheringId).populate({
+      path: "messages",
+      populate: {
+        path: "sender",
+        select: "firstName lastName email _id dp theme",
+      },
+    });
+    if (!gathering) {
+      return response.status(404).send("Channel not found.");
+    }
+    const messages = gathering.messages;
+    return response.status(200).json({ messages });
+  } catch (err) {
+    console.log({ err });
+    return response.status(500).send("Internal Server Error");
+  }
+};

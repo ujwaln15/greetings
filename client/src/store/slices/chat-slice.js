@@ -49,4 +49,36 @@ export const createChatSlice = (set, get) => ({
       ],
     });
   },
+  addGatheringInGatheringsList: (message) => {
+    const gatherings = get().gatherings;
+    const data = gatherings.find(
+      (gathering) => gathering._id === message.gatheringId
+    );
+    const index = gatherings.findIndex(
+      (gathering) => gathering._id === message.gatheringId
+    );
+    if (index !== -1 && index !== undefined) {
+      gatherings.splice(index, 1);
+      gatherings.unshift(data);
+    }
+  },
+  addContactsInDuoContacts: (message) => {
+    const userId = get().userInfo.id;
+    const fromId =
+      message.sender._id === userId
+        ? message.recipient._id
+        : message.sender._id;
+    const fromData =
+      message.sender._id === userId ? message.recipient : message.sender;
+    const duoContacts = get().duoContacts;
+    const data = duoContacts.find((contact) => contact._id === fromId);
+    const index = duoContacts.findIndex((contact) => contact._id === fromId);
+    if (index != -1 && index !== undefined) {
+      duoContacts.splice(index, 1);
+      duoContacts.unshift(data);
+    } else {
+      duoContacts.unshift(fromData);
+    }
+    set({ duoContacts });
+  },
 });

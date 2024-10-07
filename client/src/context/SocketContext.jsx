@@ -12,7 +12,7 @@ export const useSocket = () => {
 // eslint-disable-next-line react/prop-types
 export const SocketProvider = ({ children }) => {
   const socket = useRef();
-  const { userInfo } = useAppStore();
+  const { userInfo, addContactsInDuoContacts } = useAppStore();
   useEffect(() => {
     if (userInfo) {
       socket.current = io(HOST, {
@@ -33,11 +33,16 @@ export const SocketProvider = ({ children }) => {
         ) {
           addMessage(message);
         }
+        addContactsInDuoContacts(message);
       };
 
       const handleReceiveGatheringMessage = (message) => {
-        const { selectedChatData, selectedChatType, addMessage } =
-          useAppStore.getState();
+        const {
+          selectedChatData,
+          selectedChatType,
+          addMessage,
+          addGatheringInGatheringsList,
+        } = useAppStore.getState();
 
         if (
           selectedChatType !== undefined &&
@@ -45,6 +50,7 @@ export const SocketProvider = ({ children }) => {
         ) {
           addMessage(message);
         }
+        addGatheringInGatheringsList(message);
       };
 
       socket.current.on("receiveMessage", handleReceiveMessage);
