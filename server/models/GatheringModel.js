@@ -5,10 +5,10 @@ const gatheringSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  members: [{ type: mongoose.Schema.ObjectId, ref: "Users", required: true }],
-  admin: { type: mongoose.Schema.ObjectId, ref: "Users", required: true },
+  members: [{ type: mongoose.Schema.ObjectId, ref: "users", required: true }],
+  admin: { type: mongoose.Schema.ObjectId, ref: "users", required: true },
   messages: [
-    { type: mongoose.Schema.ObjectId, ref: "Messages", required: false },
+    { type: mongoose.Schema.ObjectId, ref: "messages", required: false },
   ],
   createdAt: {
     type: Date,

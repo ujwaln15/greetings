@@ -47,7 +47,16 @@ function MessageBar() {
         messageType: "text",
         fileUrl: undefined,
       });
+    } else if (selectedChatType === "gathering") {
+      socket.emit("send-gathering-message", {
+        sender: userInfo.id,
+        content: message,
+        messageType: "text",
+        fileUrl: undefined,
+        gatheringId: selectedChatData._id,
+      });
     }
+    setMessage("");
   };
 
   const handleAttachmentClick = async () => {
@@ -78,6 +87,14 @@ function MessageBar() {
               recipient: selectedChatData._id,
               messageType: "file",
               fileUrl: response.data.filePath,
+            });
+          } else if (selectedChatType === "gathering") {
+            socket.emit("send-gathering-message", {
+              sender: userInfo.id,
+              content: undefined,
+              messageType: "file",
+              fileUrl: response.data.filePath,
+              gatheringId: selectedChatData._id,
             });
           }
         }

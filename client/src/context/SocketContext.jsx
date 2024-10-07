@@ -32,11 +32,26 @@ export const SocketProvider = ({ children }) => {
           selectedChatData._id === message.recipient._id
         ) {
           addMessage(message);
-          console.log(message);
+        }
+      };
+
+      const handleReceiveGatheringMessage = (message) => {
+        const { selectedChatData, selectedChatType, addMessage } =
+          useAppStore.getState();
+
+        if (
+          selectedChatType !== undefined &&
+          selectedChatData._id === message.gatheringId
+        ) {
+          addMessage(message);
         }
       };
 
       socket.current.on("receiveMessage", handleReceiveMessage);
+      socket.current.on(
+        "receive-gathering-message",
+        handleReceiveGatheringMessage
+      );
 
       return () => {
         socket.current.disconnect();

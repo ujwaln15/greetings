@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { MdFilePresent } from "react-icons/md";
 import { IoMdArrowRoundDown } from "react-icons/io";
 import { IoCloseSharp } from "react-icons/io5";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function MessageContainer() {
   const scrollRef = useRef();
@@ -71,6 +72,7 @@ function MessageContainer() {
             </div>
           )}
           {selectedChatType === "duo" && renderDuoMessages(message)}
+          {selectedChatType === "gathering" && renderGatheringMessages(message)}
         </div>
       );
     });
@@ -160,6 +162,100 @@ function MessageContainer() {
         <div className="text-xs text-gray-500">
           {moment(message.timestamp).format("LT")}
         </div>
+      </div>
+    );
+  };
+
+  const renderGatheringMessages = (message) => {
+    return (
+      <div
+        className={`mt-5 ${
+          message.sender._id !== userInfo.id ? "text-left" : "text-right"
+        }`}
+      >
+        {message.messageType === "text" && (
+          <div
+            className={`${
+              message.sender._id === userInfo.id
+                ? getTheme(userInfo.theme)
+                : "border-white/20"
+            } opacity-80 text-opacity-100 border-[4px] inline-block p-4 rounded my-1 max-w-[50%] break-words ml-10`}
+          >
+            {message.content}
+          </div>
+        )}
+        {message.messageType === "file" && (
+          <div
+            className={`${
+              message.sender._id === userInfo.id
+                ? getTheme(userInfo.theme)
+                : "border-white/20"
+            } opacity-80 text-opacity-100 border-[4px] inline-block p-4 rounded my-1 max-w-[50%] break-words`}
+          >
+            {checkIfImage(message.fileUrl) ? (
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setShowImage(true);
+                  setImageURL(message.fileUrl);
+                }}
+              >
+                <img
+                  src={`${HOST}/${message.fileUrl}`}
+                  height={300}
+                  width={300}
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-4">
+                <span className="text-white/80 text-3xl bg-black/20 rounded-full p-3">
+                  <MdFilePresent />
+                </span>
+                <span className="text-white">
+                  {message.fileUrl.split("/").pop()}
+                </span>
+                <span
+                  className="bg-black/20 p-3 text-2xl rounded-full hover:bg-black/50 cursor-pointer transition-all duration-300"
+                  onClick={() => downloadFile(message.fileUrl)}
+                >
+                  <IoMdArrowRoundDown />
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+        {message.sender._id !== userInfo.id ? (
+          <div className="flex items-center justify-start gap-3">
+            <Avatar className="h-8 w-8 rounded-full overflow-hidden">
+              {message.sender.dp && (
+                <AvatarImage
+                  src={`${HOST}/${message.sender.dp}`}
+                  alt="user"
+                  className="object-cover w-full h-full bg-black"
+                />
+              )}
+              <AvatarFallback
+                className={`uppercase h-8 w-8 text-lg flex items-center justify-center rounded-full ${getTheme(
+                  message.sender.theme
+                )}`}
+              >
+                {message.sender.firstName
+                  ? message.sender.firstName.split("").shift()
+                  : message.sender.email.split("").shift()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm text-white">
+              {`${message.sender.firstName} ${message.sender.lastName}`}
+            </span>
+            <span className="text-xs text-gray-500">
+              {moment(message.timestamp).format("LT")}
+            </span>
+          </div>
+        ) : (
+          <div className="text-xs text-gray-500 mt-1">
+            {moment(message.timestamp).format("LT")}
+          </div>
+        )}
       </div>
     );
   };
