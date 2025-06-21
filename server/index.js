@@ -27,8 +27,8 @@ app.use(
   })
 );
 
-app.use("/tmp/uploads/dps", express.static("uploads/dps"));
-app.use("/tmp/uploads/files", express.static("uploads/files"));
+app.use("/tmp/uploads/dps", express.static("/tmp/uploads/dps"));
+app.use("/tmp/uploads/files", express.static("/tmp/uploads/files"));
 
 // enabling cookies
 app.use(cookieParser());
