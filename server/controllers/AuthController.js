@@ -142,7 +142,7 @@ export const addDp = async (request, response, next) => {
     }
 
     const date = Date.now();
-    let fileName = "uploads/dps/" + date + request.file.originalname;
+    let fileName = "/tmp/uploads/dps/" + date + request.file.originalname;
     renameSync(request.file.path, fileName);
 
     const updatedUser = await User.findByIdAndUpdate(
