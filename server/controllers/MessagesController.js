@@ -29,7 +29,7 @@ export const uploadFile = async (request, response, next) => {
       return response.status(400).send("File is required.");
     }
     const date = Date.now();
-    let fileDir = `uploads/files/${date}`;
+    let fileDir = `/tmp/uploads/files/${date}`;
     let fileName = `${fileDir}/${request.file.originalname}`;
 
     mkdirSync(fileDir, { recursive: true });
